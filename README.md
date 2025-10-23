@@ -98,40 +98,7 @@ The following questions guide the design of the cube and the measures:
 
 ---
 
-## Data Warehouse Design (Star Schema)
-
-### Fact Table: `FactBug`
-Grain: **one row = one bug (ticket)**
-
-| Measure | Description |
-|----------|--------------|
-| `IssueCount` | Always 1 (used for counts) |
-| `IsOpen` | 1 if bug status = open / new |
-| `IsFixed` | 1 if resolution = “corrigé” |
-| `IsAssigned` | 1 if developer assigned |
-| `AgeDays` | Days between creation and last update |
-| `TimeToResolutionDays` | Days between creation and resolution |
-
-### Dimensions
-
-| Dimension | Description | Example values |
-|------------|--------------|----------------|
-| **DimDate** | Calendar (submission, update, resolution dates) | 2025-10-21 |
-| **DimUser** | Reporter and developer identities | ale, jghali |
-| **DimProject** | Project name (e.g., Scribus) | Scribus |
-| **DimPriority** | Business priority of bug | normale, élevée |
-| **DimSeverity** | Technical severity | mineur, majeur, plantage |
-| **DimReproducibility** | Reproducibility level | toujours, sans objet |
-| **DimCategory** | Module or component | General, UI |
-| **DimProductVersion** | Product version | 1.6.4, 1.7.1.svn |
-| **DimOS** | Operating system / platform | Windows 11, Ubuntu 24.04 |
-| **DimVisibility** | Ticket type | public / privé |
-| **DimStatus** | Current workflow state | nouveau, fermé |
-| **DimResolution** | Final outcome | corrigé, pas un bug |
-
----
-
-## Example KPIs
+## KPIs
 
 | KPI | Definition | Formula |
 |-----|-------------|----------|
@@ -163,24 +130,14 @@ Grain: **one row = one bug (ticket)**
 1. **Star Schema** implemented in Snowflake  
 2. **ETL scripts** to load dimensions and facts  
 3. **Power BI / OLAP reports** answering analytical questions  
-4. **Documentation & README** (this file)
-
----
-
-## Star Schema
-
-<img width="1173" height="1380" alt="Startsc1" src="https://github.com/user-attachments/assets/efff54b1-5a49-4110-a922-a3bb01de304b" />
-
+4. **Documentation & README**
 ---
 
 ## References
 
 - Scribus Bugtracker: [https://bugs.scribus.net](https://bugs.scribus.net)
 - MantisBT project: [https://www.mantisbt.org](https://www.mantisbt.org)
-- HES-SO Course Material (Prof. René Schumann)
-- Snowflake Workshop (Gaël Charrière)
+- HES-SO Course Material
+- Snowflake Workshop 
 
 ---
-
-*Author: [Your Name]*  
-*Data Exploitation — HES-SO Valais Wallis, 2025*
