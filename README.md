@@ -12,44 +12,44 @@ Each record represents a reported bug with information about its reporter, assig
 
 ## Data Source
 
-- **File name:** `Scribus.csv`  
-- **Records:** 3,254  
-- **Columns:** 19  
-- **Source:** Extracted weekly from [http://teachingse.hevs.ch/csvFiles/](http://teachingse.hevs.ch/csvFiles/)  
+- **File name:** `Scribus.csv`
+- **Records:** 3,254
+- **Columns:** 19
+- **Source:** Extracted weekly from [http://teachingse.hevs.ch/csvFiles/](http://teachingse.hevs.ch/csvFiles/)
 - **System:** [https://bugs.scribus.net](https://bugs.scribus.net)
 
 ### Key Columns
 
-| Column | Description |
-|---------|--------------|
-| `Identifiant` | Unique bug ID (from Mantis) |
-| `Rapporteur` | User who reported the bug |
-| `Affecté à` | Developer assigned to fix it |
-| `Priorité` | Importance level (basse, normale, élevée…) |
-| `Sévérité` | Severity (mineur, majeur, plantage, fonctionnalité…) |
-| `Reproductibilité` | Reproducibility (toujours, parfois, sans objet…) |
-| `Version du produit` | Product version where the bug appeared |
-| `Catégorie` | Functional module (UI, Text Frames, General, etc.) |
-| `Date de soumission` | Date when the bug was reported |
-| `Mis à jour` | Last modification date |
-| `Système d’exploitation` | OS used when reporting |
-| `Plateforme` | Machine type (Linux, Desktop, Macintosh…) |
-| `État` | Current state (nouveau, traité, fermé, affecté…) |
-| `Résolution` | Final outcome (corrigé, pas un bug, ouvert…) |
-| `Résumée` | Short text summary of the issue |
+| Column                   | Description                                          |
+| ------------------------ | ---------------------------------------------------- |
+| `Identifiant`            | Unique bug ID (from Mantis)                          |
+| `Rapporteur`             | User who reported the bug                            |
+| `Affecté à`              | Developer assigned to fix it                         |
+| `Priorité`               | Importance level (basse, normale, élevée…)           |
+| `Sévérité`               | Severity (mineur, majeur, plantage, fonctionnalité…) |
+| `Reproductibilité`       | Reproducibility (toujours, parfois, sans objet…)     |
+| `Version du produit`     | Product version where the bug appeared               |
+| `Catégorie`              | Functional module (UI, Text Frames, General, etc.)   |
+| `Date de soumission`     | Date when the bug was reported                       |
+| `Mis à jour`             | Last modification date                               |
+| `Système d’exploitation` | OS used when reporting                               |
+| `Plateforme`             | Machine type (Linux, Desktop, Macintosh…)            |
+| `État`                   | Current state (nouveau, traité, fermé, affecté…)     |
+| `Résolution`             | Final outcome (corrigé, pas un bug, ouvert…)         |
+| `Résumée`                | Short text summary of the issue                      |
 
 ---
 
 ## Data Analysis Summary
 
-- **Total records:** 3,254 bugs  
-- **Distinct reporters:** 864 users  
-- **Assigned bugs:** 444 (~13%) have a developer assigned  
-- **Most frequent priority:** `normale` (92%)  
-- **Most frequent severity:** `mineur` (47%)  
-- **Time range:** 2003 → 2025  
-- **Public tickets:** 100% (Visibilité = public)  
-- **Operating systems:** Ubuntu, Windows, macOS, Fedora…  
+- **Total records:** 3,254 bugs
+- **Distinct reporters:** 864 users
+- **Assigned bugs:** 444 (~13%) have a developer assigned
+- **Most frequent priority:** `normale` (92%)
+- **Most frequent severity:** `mineur` (47%)
+- **Time range:** 2003 → 2025
+- **Public tickets:** 100% (Visibilité = public)
+- **Operating systems:** Ubuntu, Windows, macOS, Fedora…
 - **Most common categories:** `General`, `User Interface`, `Build System`
 
 ### Observations
@@ -63,7 +63,7 @@ Each record represents a reported bug with information about its reporter, assig
 
 ## Business Intelligence Objectives
 
-The goal is to transform the raw bug data into a **data warehouse** with a **Star Schema**, enabling multidimensional analysis in **Snowflake** or **Power BI**.
+The goal is to transform the raw bug data into a **data warehouse** with a **Star Schema**, enabling multidimensional analysis
 
 ---
 
@@ -72,26 +72,31 @@ The goal is to transform the raw bug data into a **data warehouse** with a **Sta
 The following questions guide the design of the cube and the measures:
 
 ### 1. General Activity
+
 - How many bugs have been created over time?
 - What is the trend of new vs. resolved bugs by month or year?
 - How many bugs are still open today?
 
 ### 2. Product Quality
+
 - Which versions of Scribus generate the most bugs?
 - Which versions contain the most corrected bugs?
 - What is the bug correction rate per version?
 
 ### 3. Developer Performance
+
 - How many bugs are assigned to each developer?
 - Which developers resolve the most bugs?
 - What is the average resolution time per developer?
 
 ### 4. Functional Analysis
+
 - Which categories (modules) generate the most bugs?
 - Which categories have the highest ratio of open vs. fixed bugs?
 - What are the most common severity levels per category?
 
 ### 5. Environment & Reproducibility
+
 - Which operating systems generate the most bug reports?
 - Are some OS families (Windows, macOS, Linux) more error-prone?
 - What percentage of bugs are always reproducible?
@@ -100,44 +105,36 @@ The following questions guide the design of the cube and the measures:
 
 ## KPIs
 
-| KPI | Definition | Formula |
-|-----|-------------|----------|
-| **Total Bugs** | Number of bug records | `COUNT(*)` |
-| **Fixed Bugs** | Bugs with Resolution = “corrigé” | `SUM(IsFixed)` |
-| **Open Bugs** | Bugs still open or new | `SUM(IsOpen)` |
-| **Fix Rate** | % of bugs fixed | `(Fixed / Total) * 100` |
+| KPI                     | Definition                           | Formula                     |
+| ----------------------- | ------------------------------------ | --------------------------- |
+| **Total Bugs**          | Number of bug records                | `COUNT(*)`                  |
+| **Fixed Bugs**          | Bugs with Resolution = “corrigé”     | `SUM(IsFixed)`              |
+| **Open Bugs**           | Bugs still open or new               | `SUM(IsOpen)`               |
+| **Fix Rate**            | % of bugs fixed                      | `(Fixed / Total) * 100`     |
 | **Avg Resolution Time** | Mean days between submission and fix | `AVG(TimeToResolutionDays)` |
-| **Assigned Rate** | % of bugs with assignee | `(Assigned / Total) * 100` |
+| **Assigned Rate**       | % of bugs with assignee              | `(Assigned / Total) * 100`  |
 
 ---
 
 ## Tools & Workflow
 
-- **Data source:** CSV from Mantis/Scribus  
-- **Storage & Queries:** Snowflake (Enterprise Edition, EU-Frankfurt)  
-- **ETL Steps:**  
-  1. Load CSV → staging table  
-  2. Clean & normalize (priorities, OS names, versions)  
-  3. Populate dimension tables  
-  4. Load `FactBug` with surrogate keys  
-- **Visualization:** Power BI, Cube viewers, MDX queries  
-- **Version control:** dbdiagram.io for schema design  
+- **Data source:** CSV from Mantis/Scribus
+- **Storage & Queries:** Snowflake (Enterprise Edition, EU-Frankfurt)
+- **ETL Steps:**
+  1. Load CSV → staging table
+  2. Clean & normalize (priorities, OS names, versions)
+  3. Populate dimension tables
+  4. Load `FactBug` with surrogate keys
+- **Visualization:** Power BI, Cube viewers, MDX queries
+- **Version control:** dbdiagram.io for schema design
 
 ---
 
 ## Deliverables
 
-1. **Star Schema** implemented in Snowflake  
-2. **ETL scripts** to load dimensions and facts  
-3. **Power BI / OLAP reports** answering analytical questions  
+1. **Star Schema**
+2. **ETL scripts** to load dimensions and facts
+3. **Power BI / OLAP reports** answering analytical questions
 4. **Documentation & README**
----
-
-## References
-
-- Scribus Bugtracker: [https://bugs.scribus.net](https://bugs.scribus.net)
-- MantisBT project: [https://www.mantisbt.org](https://www.mantisbt.org)
-- HES-SO Course Material
-- Snowflake Workshop 
 
 ---
