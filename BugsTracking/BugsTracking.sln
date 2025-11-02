@@ -1,0 +1,22 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.14.36623.8 d17.14
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{C9674DCB-5085-4A16-B785-4C70DD1589BD}") = "BugsTracking", "BugsTracking\BugsTracking.dtproj", "{DB04E12C-AD2A-4B88-E991-A15D50C6ECE3}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Development|Default = Development|Default
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{DB04E12C-AD2A-4B88-E991-A15D50C6ECE3}.Development|Default.ActiveCfg = Development
+		{DB04E12C-AD2A-4B88-E991-A15D50C6ECE3}.Development|Default.Build.0 = Development
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {10A36B74-C677-4257-A926-45AF54ADF974}
+	EndGlobalSection
+EndGlobal
