@@ -6,7 +6,8 @@
 */
 
 -- Création de la base de données DWBugs
-CREATE OR ALTER DATABASE DWBugs;
+CREATE DATABASE DWBugs;
+GO
 USE DWBugs;
 
 -- =============================================
