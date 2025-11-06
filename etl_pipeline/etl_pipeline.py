@@ -42,4 +42,3 @@ def clean_data(data):
 df = get_data_from_file('data/scribus-dump-2025-11-03.csv')
 cleaned_df = clean_data(df)
 get_csv_from_url('http://teachingse.hevs.ch/csvFiles/')
-
