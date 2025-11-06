@@ -68,7 +68,8 @@ CREATE TABLE DimCategory (
 CREATE TABLE DimOs (
     OsId INT PRIMARY KEY,
     OsPlatform NVARCHAR(100) NOT NULL,
-    OsName NVARCHAR(100) NOT NULL
+    OsName NVARCHAR(100) NOT NULL,
+    OsVersion NVARCHAR (100) NOT NULL
 );
 
 -- Dimension Statut
