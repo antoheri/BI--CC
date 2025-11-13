@@ -1,0 +1,11 @@
+DROP TABLE [dbo].[FactBugs]
+DROP TABLE [dbo].[DimOs];
+DROP TABLE [dbo].[DimPriority];
+DROP TABLE [dbo].[DimProject];
+DROP TABLE [dbo].[DimReproducibility];
+DROP TABLE [dbo].[DimSeverity];
+DROP TABLE  [dbo].[DimStatus];
+DROP TABLE  [dbo].[DimUser];
+DROP TABLE  [dbo].[DimVersion];
+DROP TABLE [dbo].[DimCalendar];
+DROP TABLE [dbo].[DimCategory];
