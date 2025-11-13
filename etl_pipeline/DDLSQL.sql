@@ -5,10 +5,7 @@
 ================================================================
 */
 
--- Création de la base de données DWBugs
 CREATE DATABASE DWBugs;
-GO
-USE DWBugs;
 
 -- =============================================
 -- ===         TABLES DE DIMENSIONS          ===
@@ -84,8 +81,12 @@ CREATE TABLE DimStatus (
 -- =============================================
 
 CREATE TABLE FactBug (
-    BugId INT PRIMARY KEY,
+    BugFactKey INT IDENTITY(1,1) PRIMARY KEY,
+    BugId INT NOT NULL,
+    SDC_StartDate INT FOREIGN KEY REFERENCES DimCalendar(DateId),
+    SDC_EndDate INT FOREIGN KEY REFERENCES DimCalendar(DateId),
     
+    [IsCurrent] BIT NOT NULL,
     [Summary] NVARCHAR(500) NOT NULL, -- Ajout de la colonne Summary
     
     -- Clés étrangères (FKs) vers les dimensions
