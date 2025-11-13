@@ -1,0 +1,6 @@
+beautifulsoup4
+mssql_python
+pandas
+python-dotenv
+Requests
+tqdm
