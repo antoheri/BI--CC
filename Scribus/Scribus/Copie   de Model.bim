@@ -1,0 +1,771 @@
+{
+  "name": "SemanticModel",
+  "compatibilityLevel": 1500,
+  "model": {
+    "culture": "fr-CH",
+    "dataSources": [
+      {
+        "type": "structured",
+        "name": "SQL/PC-ETAGE\\DATAEXPLOITATION;DWBugs",
+        "connectionDetails": {
+          "protocol": "tds",
+          "address": {
+            "server": "PC-ETAGE\\DATAEXPLOITATION",
+            "database": "DWBugs"
+          },
+          "authentication": null,
+          "query": null
+        },
+        "credential": {
+          "AuthenticationKind": "UsernamePassword",
+          "kind": "SQL",
+          "path": "pc-etage\\dataexploitation;DWBugs",
+          "Username": "sa",
+          "EncryptConnection": false
+        }
+      }
+    ],
+    "tables": [
+      {
+        "name": "DimCalendar",
+        "columns": [
+          {
+            "name": "DateId",
+            "dataType": "int64",
+            "sourceColumn": "DateId"
+          },
+          {
+            "name": "Date",
+            "dataType": "dateTime",
+            "sourceColumn": "Date"
+          },
+          {
+            "name": "Day",
+            "dataType": "int64",
+            "sourceColumn": "Day"
+          },
+          {
+            "name": "Month",
+            "dataType": "int64",
+            "sourceColumn": "Month"
+          },
+          {
+            "name": "Year",
+            "dataType": "int64",
+            "sourceColumn": "Year"
+          }
+        ],
+        "partitions": [
+          {
+            "name": "Partition",
+            "dataView": "full",
+            "source": {
+              "type": "m",
+              "expression": [
+                "let",
+                "    Source = #\"SQL/PC-ETAGE\\DATAEXPLOITATION;DWBugs\",",
+                "    dbo_DimCalendar = Source{[Schema=\"dbo\",Item=\"DimCalendar\"]}[Data]",
+                "in",
+                "    dbo_DimCalendar"
+              ]
+            }
+          }
+        ],
+        "hierarchies": [
+          {
+            "name": "CalendarHierarchy",
+            "levels": [
+              {
+                "name": "Year",
+                "ordinal": 0,
+                "column": "Year"
+              },
+              {
+                "name": "Month",
+                "ordinal": 1,
+                "column": "Month"
+              },
+              {
+                "name": "Day",
+                "ordinal": 2,
+                "column": "Day"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "DimCategory",
+        "columns": [
+          {
+            "name": "CategoryId",
+            "dataType": "int64",
+            "sourceColumn": "CategoryId"
+          },
+          {
+            "name": "CategoryName",
+            "dataType": "string",
+            "sourceColumn": "CategoryName"
+          }
+        ],
+        "partitions": [
+          {
+            "name": "Partition",
+            "dataView": "full",
+            "source": {
+              "type": "m",
+              "expression": [
+                "let",
+                "    Source = #\"SQL/PC-ETAGE\\DATAEXPLOITATION;DWBugs\",",
+                "    dbo_DimCategory = Source{[Schema=\"dbo\",Item=\"DimCategory\"]}[Data]",
+                "in",
+                "    dbo_DimCategory"
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "name": "DimOs",
+        "columns": [
+          {
+            "name": "OsId",
+            "dataType": "int64",
+            "sourceColumn": "OsId"
+          },
+          {
+            "name": "OsPlatform",
+            "dataType": "string",
+            "sourceColumn": "OsPlatform"
+          },
+          {
+            "name": "OsName",
+            "dataType": "string",
+            "sourceColumn": "OsName"
+          },
+          {
+            "name": "OsVersion",
+            "dataType": "string",
+            "sourceColumn": "OsVersion"
+          }
+        ],
+        "partitions": [
+          {
+            "name": "Partition",
+            "dataView": "full",
+            "source": {
+              "type": "m",
+              "expression": [
+                "let",
+                "    Source = #\"SQL/PC-ETAGE\\DATAEXPLOITATION;DWBugs\",",
+                "    dbo_DimOs = Source{[Schema=\"dbo\",Item=\"DimOs\"]}[Data]",
+                "in",
+                "    dbo_DimOs"
+              ]
+            }
+          }
+        ],
+        "hierarchies": [
+          {
+            "name": "OsHierarchy",
+            "levels": [
+              {
+                "name": "OsPlatform",
+                "ordinal": 0,
+                "column": "OsPlatform"
+              },
+              {
+                "name": "OsName",
+                "ordinal": 1,
+                "column": "OsName"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "DimPriority",
+        "columns": [
+          {
+            "name": "PriorityId",
+            "dataType": "int64",
+            "sourceColumn": "PriorityId"
+          },
+          {
+            "name": "PriorityName",
+            "dataType": "string",
+            "sourceColumn": "PriorityName"
+          }
+        ],
+        "partitions": [
+          {
+            "name": "Partition",
+            "dataView": "full",
+            "source": {
+              "type": "m",
+              "expression": [
+                "let",
+                "    Source = #\"SQL/PC-ETAGE\\DATAEXPLOITATION;DWBugs\",",
+                "    dbo_DimPriority = Source{[Schema=\"dbo\",Item=\"DimPriority\"]}[Data]",
+                "in",
+                "    dbo_DimPriority"
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "name": "DimProject",
+        "columns": [
+          {
+            "name": "ProjectId",
+            "dataType": "int64",
+            "sourceColumn": "ProjectId"
+          },
+          {
+            "name": "ProjectName",
+            "dataType": "string",
+            "sourceColumn": "ProjectName"
+          }
+        ],
+        "partitions": [
+          {
+            "name": "Partition",
+            "dataView": "full",
+            "source": {
+              "type": "m",
+              "expression": [
+                "let",
+                "    Source = #\"SQL/PC-ETAGE\\DATAEXPLOITATION;DWBugs\",",
+                "    dbo_DimProject = Source{[Schema=\"dbo\",Item=\"DimProject\"]}[Data]",
+                "in",
+                "    dbo_DimProject"
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "name": "DimReproducibility",
+        "columns": [
+          {
+            "name": "ReproducibilityId",
+            "dataType": "int64",
+            "sourceColumn": "ReproducibilityId"
+          },
+          {
+            "name": "ReproducibilityName",
+            "dataType": "string",
+            "sourceColumn": "ReproducibilityName"
+          }
+        ],
+        "partitions": [
+          {
+            "name": "Partition",
+            "dataView": "full",
+            "source": {
+              "type": "m",
+              "expression": [
+                "let",
+                "    Source = #\"SQL/PC-ETAGE\\DATAEXPLOITATION;DWBugs\",",
+                "    dbo_DimReproducibility = Source{[Schema=\"dbo\",Item=\"DimReproducibility\"]}[Data]",
+                "in",
+                "    dbo_DimReproducibility"
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "name": "DimSeverity",
+        "columns": [
+          {
+            "name": "SeverityId",
+            "dataType": "int64",
+            "sourceColumn": "SeverityId"
+          },
+          {
+            "name": "SeverityName",
+            "dataType": "string",
+            "sourceColumn": "SeverityName"
+          }
+        ],
+        "partitions": [
+          {
+            "name": "Partition",
+            "dataView": "full",
+            "source": {
+              "type": "m",
+              "expression": [
+                "let",
+                "    Source = #\"SQL/PC-ETAGE\\DATAEXPLOITATION;DWBugs\",",
+                "    dbo_DimSeverity = Source{[Schema=\"dbo\",Item=\"DimSeverity\"]}[Data]",
+                "in",
+                "    dbo_DimSeverity"
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "name": "DimUser",
+        "columns": [
+          {
+            "name": "UserId",
+            "dataType": "int64",
+            "sourceColumn": "UserId"
+          },
+          {
+            "name": "Username",
+            "dataType": "string",
+            "sourceColumn": "Username"
+          }
+        ],
+        "partitions": [
+          {
+            "name": "Partition",
+            "dataView": "full",
+            "source": {
+              "type": "m",
+              "expression": [
+                "let",
+                "    Source = #\"SQL/PC-ETAGE\\DATAEXPLOITATION;DWBugs\",",
+                "    dbo_DimUser = Source{[Schema=\"dbo\",Item=\"DimUser\"]}[Data]",
+                "in",
+                "    dbo_DimUser"
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "name": "DimStatus",
+        "columns": [
+          {
+            "name": "StatusId",
+            "dataType": "int64",
+            "sourceColumn": "StatusId"
+          },
+          {
+            "name": "StatusName",
+            "dataType": "string",
+            "sourceColumn": "StatusName"
+          }
+        ],
+        "partitions": [
+          {
+            "name": "Partition",
+            "dataView": "full",
+            "source": {
+              "type": "m",
+              "expression": [
+                "let",
+                "    Source = #\"SQL/PC-ETAGE\\DATAEXPLOITATION;DWBugs\",",
+                "    dbo_DimStatus = Source{[Schema=\"dbo\",Item=\"DimStatus\"]}[Data]",
+                "in",
+                "    dbo_DimStatus"
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "name": "DimVersion",
+        "columns": [
+          {
+            "name": "VersionId",
+            "dataType": "int64",
+            "sourceColumn": "VersionId"
+          },
+          {
+            "name": "VersionName",
+            "dataType": "string",
+            "sourceColumn": "VersionName"
+          }
+        ],
+        "partitions": [
+          {
+            "name": "Partition",
+            "dataView": "full",
+            "source": {
+              "type": "m",
+              "expression": [
+                "let",
+                "    Source = #\"SQL/PC-ETAGE\\DATAEXPLOITATION;DWBugs\",",
+                "    dbo_DimVersion = Source{[Schema=\"dbo\",Item=\"DimVersion\"]}[Data]",
+                "in",
+                "    dbo_DimVersion"
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "name": "FactBug",
+        "columns": [
+          {
+            "name": "BugFactKey",
+            "dataType": "int64",
+            "sourceColumn": "BugFactKey"
+          },
+          {
+            "name": "BugId",
+            "dataType": "int64",
+            "sourceColumn": "BugId"
+          },
+          {
+            "name": "SDC_StartDate",
+            "dataType": "int64",
+            "sourceColumn": "SDC_StartDate"
+          },
+          {
+            "name": "SDC_EndDate",
+            "dataType": "int64",
+            "sourceColumn": "SDC_EndDate"
+          },
+          {
+            "name": "IsCurrent",
+            "dataType": "boolean",
+            "sourceColumn": "IsCurrent"
+          },
+          {
+            "name": "Summary",
+            "dataType": "string",
+            "sourceColumn": "Summary"
+          },
+          {
+            "name": "DateSubmittedId",
+            "dataType": "int64",
+            "sourceColumn": "DateSubmittedId"
+          },
+          {
+            "name": "DateUpdatedId",
+            "dataType": "int64",
+            "sourceColumn": "DateUpdatedId"
+          },
+          {
+            "name": "ProjectId",
+            "dataType": "int64",
+            "sourceColumn": "ProjectId"
+          },
+          {
+            "name": "ReporterId",
+            "dataType": "int64",
+            "sourceColumn": "ReporterId"
+          },
+          {
+            "name": "AssigneeId",
+            "dataType": "int64",
+            "sourceColumn": "AssigneeId"
+          },
+          {
+            "name": "PriorityId",
+            "dataType": "int64",
+            "sourceColumn": "PriorityId"
+          },
+          {
+            "name": "SeverityId",
+            "dataType": "int64",
+            "sourceColumn": "SeverityId"
+          },
+          {
+            "name": "ReproducibilityId",
+            "dataType": "int64",
+            "sourceColumn": "ReproducibilityId"
+          },
+          {
+            "name": "ProductVersionId",
+            "dataType": "int64",
+            "sourceColumn": "ProductVersionId"
+          },
+          {
+            "name": "VersionFixedId",
+            "dataType": "int64",
+            "sourceColumn": "VersionFixedId"
+          },
+          {
+            "name": "CategoryId",
+            "dataType": "int64",
+            "sourceColumn": "CategoryId"
+          },
+          {
+            "name": "OsId",
+            "dataType": "int64",
+            "sourceColumn": "OsId"
+          },
+          {
+            "name": "ViewStatusId",
+            "dataType": "int64",
+            "sourceColumn": "ViewStatusId"
+          },
+          {
+            "name": "StatusId",
+            "dataType": "int64",
+            "sourceColumn": "StatusId"
+          },
+          {
+            "name": "ResolutionId",
+            "dataType": "int64",
+            "sourceColumn": "ResolutionId"
+          }
+        ],
+        "partitions": [
+          {
+            "name": "Partition",
+            "dataView": "full",
+            "source": {
+              "type": "m",
+              "expression": [
+                "let",
+                "    Source = #\"SQL/PC-ETAGE\\DATAEXPLOITATION;DWBugs\",",
+                "    dbo_FactBug = Source{[Schema=\"dbo\",Item=\"FactBug\"]}[Data]",
+                "in",
+                "    dbo_FactBug"
+              ]
+            }
+          }
+        ],
+        "measures": [
+          {
+            "name": "Nombre de Bugs",
+            "expression": " DISTINCTCOUNT(FactBug[BugId])"
+          },
+          {
+            "name": "Bugs Créés (Tendance)",
+            "expression": " [Nombre de Bugs]"
+          },
+          {
+            "name": "Bugs Résolus (Tendance)",
+            "expression": [
+              " ",
+              "CALCULATE(",
+              "    [Nombre de Bugs],",
+              "    USERELATIONSHIP(FactBug[DateUpdatedId], DimCalendar[DateId]),",
+              "    USERELATIONSHIP(FactBug[ResolutionId], DimStatus[StatusId]),",
+              "    DimStatus[StatusName] IN {\"fixed\", \"closed\", \"resolved\", \"verified\"}",
+              ")"
+            ]
+          },
+          {
+            "name": "Bugs Ouverts (Actuels)",
+            "expression": [
+              "",
+              "CALCULATE(",
+              "    [Nombre de Bugs],",
+              "    FactBug[IsCurrent] = TRUE(),",
+              "    USERELATIONSHIP(FactBug[ResolutionId], DimStatus[StatusId]),",
+              "    NOT(DimStatus[StatusName] IN {\"fixed\", \"closed\", \"resolved\", \"verified\"})",
+              ")"
+            ]
+          },
+          {
+            "name": "Bugs Corrigés (par Version)",
+            "expression": [
+              "",
+              "CALCULATE(",
+              "    [Nombre de Bugs],",
+              "    USERELATIONSHIP(FactBug[VersionFixedId], DimVersion[VersionId]),",
+              "    DimVersion[VersionName] <> \"Unknown\" // Exclut les bugs non corrigés",
+              ")"
+            ]
+          },
+          {
+            "name": "Taux de Correction (par Version)",
+            "expression": [
+              "",
+              "DIVIDE(",
+              "    [Bugs Corrigés (par Version)],",
+              "    [Bugs Créés (Tendance)], // = [Nombre de Bugs] sur ProductVersionId",
+              "    0",
+              ")"
+            ]
+          },
+          {
+            "name": "Bugs Résolus (par Assigné)",
+            "expression": [
+              "",
+              "CALCULATE(",
+              "    [Nombre de Bugs],",
+              "    FactBug[IsCurrent] = TRUE(), // On regarde l'état actuel",
+              "    USERELATIONSHIP(FactBug[ResolutionId], DimStatus[StatusId]),",
+              "    DimStatus[StatusName] IN {\"fixed\", \"closed\", \"resolved\", \"verified\"}",
+              ")"
+            ]
+          },
+          {
+            "name": "Temps Résolution Moyen (Jours)",
+            "expression": [
+              "",
+              "AVERAGEX(",
+              "    // 1. Trouver tous les bugs actuellement résolus",
+              "    FILTER(",
+              "        FactBug,",
+              "        FactBug[IsCurrent] = TRUE()",
+              "        && CALCULATE(",
+              "               VALUES(DimStatus[StatusName]),",
+              "               USERELATIONSHIP(FactBug[ResolutionId], DimStatus[StatusId])",
+              "           ) IN {\"fixed\", \"closed\", \"resolved\", \"verified\"}",
+              "    ),",
+              "",
+              "    // 2. Pour chaque bug, calculer la durée",
+              "    VAR SubmittedDate = RELATED(DimCalendar[Date]) // Utilise la relation ACTIVE (DateSubmittedId)",
+              "    VAR ResolvedDate = CALCULATE(",
+              "                           MAX(DimCalendar[Date]), // Utilise la relation INACTIVE (DateUpdatedId)",
+              "                           USERELATIONSHIP(FactBug[DateUpdatedId], DimCalendar[DateId])",
+              "                       )",
+              "    RETURN",
+              "    DATEDIFF(SubmittedDate, ResolvedDate, DAY)",
+              ")"
+            ]
+          },
+          {
+            "name": "Ratio Ouverts/Résolus",
+            "expression": [
+              "",
+              "DIVIDE(",
+              "    [Bugs Ouverts (Actuels)],",
+              "    [Bugs Résolus (par Assigné)], // C'est le même calcul que les bugs résolus",
+              "    0",
+              ")"
+            ]
+          }
+        ]
+      }
+    ],
+    "relationships": [
+      {
+        "name": "675b3d09-dad2-499f-8665-4dd087329379",
+        "fromTable": "FactBug",
+        "fromColumn": "DateUpdatedId",
+        "toTable": "DimCalendar",
+        "toColumn": "DateId",
+        "isActive": false
+      },
+      {
+        "name": "69436671-d842-4e59-a6ce-b0e6ca56aac3",
+        "fromTable": "FactBug",
+        "fromColumn": "SDC_EndDate",
+        "toTable": "DimCalendar",
+        "toColumn": "DateId",
+        "isActive": false
+      },
+      {
+        "name": "4921baac-0c9f-4f4f-9d43-200d789d3b3f",
+        "fromTable": "FactBug",
+        "fromColumn": "ResolutionId",
+        "toTable": "DimStatus",
+        "toColumn": "StatusId",
+        "isActive": false
+      },
+      {
+        "name": "38e5600f-d830-403d-8e82-f644e4b4b0ab",
+        "fromTable": "FactBug",
+        "fromColumn": "VersionFixedId",
+        "toTable": "DimVersion",
+        "toColumn": "VersionId",
+        "isActive": false
+      },
+      {
+        "name": "9a2aee39-2f2b-48f0-9bee-1564c8b1c00c",
+        "fromTable": "FactBug",
+        "fromColumn": "CategoryId",
+        "toTable": "DimCategory",
+        "toColumn": "CategoryId"
+      },
+      {
+        "name": "bccb7ba4-c552-42e6-9948-33bd82036a24",
+        "fromTable": "FactBug",
+        "fromColumn": "OsId",
+        "toTable": "DimOs",
+        "toColumn": "OsId"
+      },
+      {
+        "name": "815d8e22-9276-439f-8d2f-e6c2462edc6f",
+        "fromTable": "FactBug",
+        "fromColumn": "PriorityId",
+        "toTable": "DimPriority",
+        "toColumn": "PriorityId"
+      },
+      {
+        "name": "0a8357d0-c851-4428-a0c0-2c27f877f060",
+        "fromTable": "FactBug",
+        "fromColumn": "ProjectId",
+        "toTable": "DimProject",
+        "toColumn": "ProjectId"
+      },
+      {
+        "name": "3b3ee619-7a1f-44ba-b314-234732d15001",
+        "fromTable": "FactBug",
+        "fromColumn": "ReproducibilityId",
+        "toTable": "DimReproducibility",
+        "toColumn": "ReproducibilityId"
+      },
+      {
+        "name": "fcb2b95e-fe25-4d4c-a113-7d21f0455ced",
+        "fromTable": "FactBug",
+        "fromColumn": "SeverityId",
+        "toTable": "DimSeverity",
+        "toColumn": "SeverityId"
+      },
+      {
+        "name": "c3d988b7-1bf2-48bf-bcd3-f439dd5a7806",
+        "fromTable": "FactBug",
+        "fromColumn": "ProductVersionId",
+        "toTable": "DimVersion",
+        "toColumn": "VersionId"
+      },
+      {
+        "name": "26284bc7-9427-4690-8115-e2f40d7b7894",
+        "fromTable": "FactBug",
+        "fromColumn": "SDC_StartDate",
+        "toTable": "DimCalendar",
+        "toColumn": "DateId",
+        "isActive": false
+      },
+      {
+        "name": "6e09c0db-6aba-42b3-91ae-030fb9492785",
+        "fromTable": "FactBug",
+        "fromColumn": "DateSubmittedId",
+        "toTable": "DimCalendar",
+        "toColumn": "DateId"
+      },
+      {
+        "name": "5a347894-ffa7-4788-b1ad-4ab132b5557e",
+        "fromTable": "FactBug",
+        "fromColumn": "ReporterId",
+        "toTable": "DimUser",
+        "toColumn": "UserId",
+        "isActive": false
+      },
+      {
+        "name": "26387b4a-5822-466b-b992-f98f8570f640",
+        "fromTable": "FactBug",
+        "fromColumn": "AssigneeId",
+        "toTable": "DimUser",
+        "toColumn": "UserId"
+      },
+      {
+        "name": "30b0e669-3c51-446d-bfd5-4188c8e767cc",
+        "fromTable": "FactBug",
+        "fromColumn": "ViewStatusId",
+        "toTable": "DimStatus",
+        "toColumn": "StatusId",
+        "isActive": false
+      },
+      {
+        "name": "cffb656b-6fcc-4210-a038-ba1105eacbd0",
+        "fromTable": "FactBug",
+        "fromColumn": "StatusId",
+        "toTable": "DimStatus",
+        "toColumn": "StatusId"
+      }
+    ],
+    "annotations": [
+      {
+        "name": "ClientCompatibilityLevel",
+        "value": "600"
+      }
+    ]
+  },
+  "id": "SemanticModel"
+}
