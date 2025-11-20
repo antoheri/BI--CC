@@ -4,3 +4,5 @@ pandas
 python-dotenv
 Requests
 tqdm
+glob2
+numpy

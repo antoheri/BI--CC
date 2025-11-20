@@ -2,7 +2,7 @@ import pandas as pd
 import requests
 from bs4 import BeautifulSoup
 from tqdm import tqdm
-from datetime import date, datetime, timedelta
+from datetime import date, timedelta
 import re
 import os
 from os import getenv
