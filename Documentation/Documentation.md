@@ -12,8 +12,6 @@ Ce projet a été réalisé dans le cadre du module 62-62 Data Exploitation. Son
 5. développement de mesures analytiques en DAX,
 6. préparation d’un modèle exploitable dans des outils tels que Power BI ou Excel.
 
-L’ensemble du projet respecte les notions théoriques vues dans les différents supports de cours concernant les ETL, SSIS, les SCD, la modélisation multidimensionnelle et les cubes OLAP.
-
 ---
 
 ## 2. Objectifs du projet
