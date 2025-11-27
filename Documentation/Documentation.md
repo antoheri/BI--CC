@@ -1,4 +1,5 @@
 # Documentation du projet
+
 ## Construction d’un Data Warehouse et d’un modèle OLAP pour l’analyse du bugtracker Scribus
 
 ## 1. Introduction
@@ -118,6 +119,31 @@ Les dimensions suivantes ont été créées et alimentées :
 
 ## 5. ETL en Python
 
+### 5.1 Automatisation du pipeline
+
+Le pipeline ETL a été développé en Python pour automatiser l’extraction, la transformation et le chargement des données.
+Afin d'automatiser le processus, nous avons configuré un job "cron" sur un serveur Linux pour exécuter le script ETL chaque semaine.
+
+La structure d'un cron est la suivante :
+
+```* * * * *  commande à exécuter
+- - - - - -
+| | | | | | |
+| | | | +---- Jour de la semaine (0 - 7) (Dimanche=0 ou 7)
+| | | +------ Mois (1 - 12)
+| | +-------- Jour du mois (1 - 31)
+| +---------- Heure (0 - 23)
++------------ Minute (0 - 59)
+```
+
+Voici le cron qui exécute le script tous les lundis à 8h du matin sur notre serveur :
+
+```
+0 8 * * 1 /home/tottino/Documents/HESProjects/BI--CC/etl_pipeline/etl_pipeline.py
+```
+
+### 5.2 Structure du script ETL
+
 Les fonctions principales sont :
 
 - get_csv_from_url
@@ -163,3 +189,7 @@ Le système permet de répondre aux questions analytiques du projet.
 ## 8. Conclusion
 
 Le projet met en œuvre toute la chaîne décisionnelle : ETL, SCD, DWH, OLAP Tabular et mesures analytiques.
+
+```
+
+```
