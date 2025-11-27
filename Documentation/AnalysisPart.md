@@ -15,15 +15,14 @@ Tools used:
 
 **Connect to the data source** (the data warehouse created in the previous part).
 
-![alt connect to data source](assets/dataSource.png)
+![alt connect to data source](../assets/dataSource.png)
 
 **Import tables and define relationships** to build the data model.
 
-![alt import tables](assets/importData.png)
-
+![alt import tables](../assets/importData.png)
 In order to calculate some measure, we had to modifiy some realtion to define which need to be active or inactive.
 
-![alt model in VS Studio](assets/modelInVSStudio.png)
+![alt model in VS Studio](../assets/modelInVSStudio.png)
 
 **Create calculated columns and measures** using DAX to enhance the model.
 
@@ -60,18 +59,17 @@ USERELATIONSHIP(FactBug[AssigneeId], DimUser[UserId]),
 DimStatus[StatusName] IN {"fixed"}
 )
 
-![alt DAX measures](assets/measures.png)
+![alt DAX measures](../assets/measures.png)
 
 **Create hierarchies and perspectives** to improve data navigation.
 
 Calendar hierarchy
 
-![alt calendar hierarchy](assets/calendarHierarchy.png)
+![alt calendar hierarchy](../assets/calendarHierarchy.png)
 
 OS hierarchy
 
-![alt OS hierarchy](assets/OsHierarchy.png)
-
+![alt OS hierarchy](../assets/OsHierarchy.png)
 **Deploy the model** to the SSAS server for use in reporting tools like Power BI.
 
-![alt deploy model](assets/deployment.png)
+![alt deploy model](../assets/deployment.png)

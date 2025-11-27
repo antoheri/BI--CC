@@ -436,9 +436,6 @@ def main():
 
         # 2. Connexion DB
         db_connector = connect_to_db()
-        # Note : On suppose que le DDL (création des tables) a déjà été exécuté une fois.
-        # S'il faut le recréer, décommentez la ligne ci-dessous :
-        # create_db('DDLSQL.sql', db_connector) 
 
         # 3. Boucle de traitement pour chaque fichier (T et L)
         for file_path in csv_files:
