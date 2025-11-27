@@ -1,0 +1,27 @@
+services:
+  # 1. Le service Base de Données
+  sql-server-db:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: mssql_container
+    environment:
+      - ACCEPT_EULA=Y
+      - MSSQL_SA_PASSWORD=SuperPassword123!
+    ports:
+      - "1433:1433"
+    volumes:
+      - sql_data:/var/opt/mssql
+
+  # 2. Ton script ETL
+  etl-pipeline:
+    build: . # Construit l'image depuis le Dockerfile courant
+    depends_on:
+      sql-server-db:
+        condition: service_healthy # Attend que la DB soit prête avant de lancer le script
+    environment:
+      # NOTE IMPORTANTE : Le serveur est le nom du service ci-dessus ("sql-server-db")
+      - SQL_CONNECTION_STRING=Driver={ODBC Driver 18 for SQL Server};Server=sql-server-db;Database=master;Uid=sa;Pwd=SuperPassword123!;Encrypt=no;TrustServerCertificate=yes;
+    volumes:
+      - ./data:/etl_pipeline/data # Pour récupérer les CSV téléchargés sur ton PC
+
+volumes:
+  sql_data:
