@@ -74,7 +74,6 @@ The following questions guide the design of the cube and the measures:
 ### 1. General Activity
 
 - How many bugs have been created over time?
-- What is the trend of new vs. resolved bugs by month or year?
 - How many bugs are still open today?
 
 ### 2. Product Quality
