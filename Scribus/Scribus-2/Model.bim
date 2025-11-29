@@ -688,10 +688,6 @@
             "formatString": "0.00%;-0.00%;0.00%"
           },
           {
-            "name": "Avg Resolution Time (Hours)",
-            "expression": " [Average resolution time (Days)] * 24"
-          },
-          {
             "name": "Average resolution time (Days)",
             "expression": [
               " ",
@@ -726,35 +722,6 @@
               ")"
             ],
             "formatString": "0.00"
-          },
-          {
-            "name": "Median resolution time",
-            "expression": [
-              " ",
-              "MEDIANX(",
-              "    FILTER(",
-              "        FactBug,",
-              "        FactBug[IsCurrent] = TRUE() && ",
-              "        FactBug[DateSubmittedId] <> 0 && ",
-              "        FactBug[DateUpdatedId] <> 0 &&",
-              "        (",
-              "            VAR ResStatus = CALCULATE(",
-              "                SELECTEDVALUE(DimStatus[StatusName]), ",
-              "                USERELATIONSHIP(FactBug[ResolutionId], DimStatus[StatusId])",
-              "            )",
-              "            RETURN ResStatus IN {\"fixed\", \"resolved\"}",
-              "        )",
-              "    ),",
-              "    // Même calcul mathématique",
-              "    VAR StartID = FactBug[DateSubmittedId]",
-              "    VAR EndID = FactBug[DateUpdatedId]",
-              "    VAR StartDate = DATE(INT(StartID / 10000), INT(MOD(StartID, 10000) / 100), MOD(StartID, 100))",
-              "    VAR EndDate =   DATE(INT(EndID / 10000),   INT(MOD(EndID, 10000) / 100),   MOD(EndID, 100))",
-              "    VAR Ecart = DATEDIFF(StartDate, EndDate, DAY)",
-              "    ",
-              "    RETURN IF(Ecart = 0, 1, Ecart)",
-              ")"
-            ]
           }
         ]
       }
