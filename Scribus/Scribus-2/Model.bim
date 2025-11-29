@@ -411,6 +411,7 @@
           {
             "name": "BugFactKey",
             "dataType": "int64",
+            "isHidden": true,
             "sourceColumn": "BugFactKey"
           },
           {
@@ -421,16 +422,19 @@
           {
             "name": "SDC_StartDate",
             "dataType": "int64",
+            "isHidden": true,
             "sourceColumn": "SDC_StartDate"
           },
           {
             "name": "SDC_EndDate",
             "dataType": "int64",
+            "isHidden": true,
             "sourceColumn": "SDC_EndDate"
           },
           {
             "name": "IsCurrent",
             "dataType": "boolean",
+            "isHidden": true,
             "sourceColumn": "IsCurrent"
           },
           {
@@ -441,76 +445,91 @@
           {
             "name": "DateSubmittedId",
             "dataType": "int64",
+            "isHidden": true,
             "sourceColumn": "DateSubmittedId"
           },
           {
             "name": "DateUpdatedId",
             "dataType": "int64",
+            "isHidden": true,
             "sourceColumn": "DateUpdatedId"
           },
           {
             "name": "ProjectId",
             "dataType": "int64",
+            "isHidden": true,
             "sourceColumn": "ProjectId"
           },
           {
             "name": "ReporterId",
             "dataType": "int64",
+            "isHidden": true,
             "sourceColumn": "ReporterId"
           },
           {
             "name": "AssigneeId",
             "dataType": "int64",
+            "isHidden": true,
             "sourceColumn": "AssigneeId"
           },
           {
             "name": "PriorityId",
             "dataType": "int64",
+            "isHidden": true,
             "sourceColumn": "PriorityId"
           },
           {
             "name": "SeverityId",
             "dataType": "int64",
+            "isHidden": true,
             "sourceColumn": "SeverityId"
           },
           {
             "name": "ReproducibilityId",
             "dataType": "int64",
+            "isHidden": true,
             "sourceColumn": "ReproducibilityId"
           },
           {
             "name": "ProductVersionId",
             "dataType": "int64",
+            "isHidden": true,
             "sourceColumn": "ProductVersionId"
           },
           {
             "name": "VersionFixedId",
             "dataType": "int64",
+            "isHidden": true,
             "sourceColumn": "VersionFixedId"
           },
           {
             "name": "CategoryId",
             "dataType": "int64",
+            "isHidden": true,
             "sourceColumn": "CategoryId"
           },
           {
             "name": "OsId",
             "dataType": "int64",
+            "isHidden": true,
             "sourceColumn": "OsId"
           },
           {
             "name": "ViewStatusId",
             "dataType": "int64",
+            "isHidden": true,
             "sourceColumn": "ViewStatusId"
           },
           {
             "name": "StatusId",
             "dataType": "int64",
+            "isHidden": true,
             "sourceColumn": "StatusId"
           },
           {
             "name": "ResolutionId",
             "dataType": "int64",
+            "isHidden": true,
             "sourceColumn": "ResolutionId"
           }
         ],
@@ -532,55 +551,208 @@
         ],
         "measures": [
           {
-            "name": "Number of bugs",
-            "expression": " DISTINCTCOUNT(FactBug[BugId])"
-          },
-          {
-            "name": "Fixed bugs",
+            "name": "Number of bugs (Current)",
             "expression": [
-              " CALCULATE(",
-              "[Number of bugs],",
-              "USERELATIONSHIP(FactBug[ResolutionId], DimStatus[StatusId]),",
-              "DimStatus[StatusName] IN {\"fixed\"})"
-            ]
-          },
-          {
-            "name": "Open bugs",
-            "expression": [
-              " CALCULATE(",
-              "[Number of bugs] - [Fixed bugs], FactBug[IsCurrent] = TRUE())"
-            ]
-          },
-          {
-            "name": "Reopenend bugs",
-            "expression": [
-              " CALCULATE(",
-              "\t[Number of bugs],",
-              "\tFactBug[IsCurrent] = TRUE(),",
-              "\tUSERELATIONSHIP(FactBug[ResolutionId], DimStatus[StatusId]),",
-              "\tDimStatus[StatusName] IN {\"reopened\"})"
-            ]
-          },
-          {
-            "name": "Fixed bugs per vesion",
-            "expression": [
-              "",
+              " ",
               "CALCULATE(",
-              "    [Number of bugs],",
-              "    USERELATIONSHIP(FactBug[VersionFixedId], DimVersion[VersionId]),",
-              "    DimVersion[VersionName] <> \"Unknown\" // Exclut les bugs non corrigés",
+              "    DISTINCTCOUNT(FactBug[BugId]),",
+              "    FactBug[IsCurrent] = TRUE() ",
               ")"
             ]
           },
           {
-            "name": "Fixed bugs per assignee",
+            "name": "Bugs Assigned",
             "expression": [
-              "",
+              " ",
               "CALCULATE(",
-              "    [Number of bugs],",
+              "    [Number of bugs (Current)],",
+              "    FactBug[IsCurrent] = TRUE(),",
+              "    FactBug[AssigneeId] <> 0",
+              ")"
+            ]
+          },
+          {
+            "name": "Bugs Created",
+            "expression": [
+              " ",
+              "CALCULATE(",
+              "    [Number of bugs (Current)],",
+              "    USERELATIONSHIP(FactBug[DateSubmittedId], DimCalendar[DateId])",
+              ")"
+            ]
+          },
+          {
+            "name": "Open Bugs",
+            "expression": [
+              " ",
+              "CALCULATE(",
+              "    [Number of bugs (Current)],",
               "    USERELATIONSHIP(FactBug[ResolutionId], DimStatus[StatusId]),",
-              "    USERELATIONSHIP(FactBug[AssigneeId], DimUser[UserId]),",
-              "    DimStatus[StatusName] IN {\"fixed\"}",
+              "    NOT(DimStatus[StatusName] IN {",
+              "        \"fixed\", ",
+              "        \"resolved\", ",
+              "        \"won't fix\", ",
+              "        \"unable to reproduce\", ",
+              "        \"no change required\"",
+              "    })",
+              ")"
+            ]
+          },
+          {
+            "name": "Bugs Resolved (Total)",
+            "expression": [
+              " ",
+              "CALCULATE(",
+              "    [Number of bugs (Current)],",
+              "    USERELATIONSHIP(FactBug[ResolutionId], DimStatus[StatusId]),",
+              "    DimStatus[StatusName] IN {",
+              "        \"fixed\", ",
+              "        \"resolved\", ",
+              "        \"won't fix\", ",
+              "        \"unable to reproduce\", ",
+              "        \"no change required\"",
+              "    }",
+              ")"
+            ]
+          },
+          {
+            "name": "Number of changes (History)",
+            "expression": " COUNTROWS(FactBug)"
+          },
+          {
+            "name": "Bugs Fixed (Success)",
+            "expression": [
+              " ",
+              "CALCULATE(",
+              "    [Number of bugs (Current)],",
+              "    USERELATIONSHIP(FactBug[ResolutionId], DimStatus[StatusId]),",
+              "    DimStatus[StatusName] IN {\"fixed\", \"resolved\"}",
+              ")"
+            ]
+          },
+          {
+            "name": "Bugs resolved (per developer)",
+            "expression": [
+              " ",
+              "CALCULATE(",
+              "    [Bugs Resolved (Total)],",
+              "    FactBug[AssigneeId] <> 0 ",
+              ")"
+            ]
+          },
+          {
+            "name": "Top Dev (Summary)",
+            "expression": [
+              " ",
+              "VAR DevStats = ",
+              "    ADDCOLUMNS(",
+              "        VALUES(DimUser[UserId]),",
+              "        \"UserName\", CALCULATE(MAX(DimUser[Username])),",
+              "        \"NbResolved\", [Bugs resolved (per developer)],",
+              "        \"AvgTime\", [Average resolution time (Days)]",
+              "    )",
+              "VAR DevFiltered = ",
+              "    FILTER(",
+              "        DevStats,",
+              "        [NbResolved] > 0 && NOT ISBLANK([AvgTime])",
+              "    )",
+              "VAR BestDev = ",
+              "    TOPN(",
+              "        1,",
+              "        DevFiltered,",
+              "        [NbResolved], DESC, // Priorité au nombre de bugs",
+              "        [AvgTime], ASC      // Puis à la vitesse (le plus petit temps est le mieux)",
+              "    )",
+              "VAR TheName = MAXX(BestDev, [UserName])",
+              "VAR TheCount = MAXX(BestDev, [NbResolved])",
+              "VAR TheTime = MAXX(BestDev, [AvgTime])",
+              "",
+              "RETURN ",
+              "    IF(",
+              "        ISBLANK(TheName),",
+              "        \"Aucune donnée\",",
+              "        TheName & \" : \" & FORMAT(TheCount, \"0\") & \" bugs (\" & FORMAT(TheTime, \"0.0\") & \" d/bug)\"",
+              "    )"
+            ]
+          },
+          {
+            "name": "Rate Bug Correction (%)",
+            "expression": [
+              " ",
+              "DIVIDE(",
+              "    [Bugs Resolved (Total)],",
+              "    [Bugs Created],",
+              "    0",
+              ")"
+            ],
+            "formatString": "0.00%;-0.00%;0.00%"
+          },
+          {
+            "name": "Avg Resolution Time (Hours)",
+            "expression": " [Average resolution time (Days)] * 24"
+          },
+          {
+            "name": "Average resolution time (Days)",
+            "expression": [
+              " ",
+              "AVERAGEX(",
+              "    FILTER(",
+              "        FactBug,",
+              "        FactBug[IsCurrent] = TRUE() && ",
+              "        (",
+              "            VAR ResStatus = CALCULATE(",
+              "                SELECTEDVALUE(DimStatus[StatusName]), ",
+              "                USERELATIONSHIP(FactBug[ResolutionId], DimStatus[StatusId])",
+              "            )",
+              "            RETURN ResStatus IN {\"fixed\", \"resolved\"}",
+              "        ) &&",
+              "        // --- SÉCURITÉ ANTI-1900 ---",
+              "        FactBug[DateSubmittedId] <> 0 && ",
+              "        FactBug[DateUpdatedId] <> 0 &&",
+              "        FactBug[DateUpdatedId] >= FactBug[DateSubmittedId] // Protection contre les dates inversées",
+              "    ),",
+              "    ",
+              "    // Calcul Mathématique (ID vers Date)",
+              "    VAR StartID = FactBug[DateSubmittedId]",
+              "    VAR EndID = FactBug[DateUpdatedId]",
+              "    ",
+              "    VAR StartDate = DATE(INT(StartID / 10000), INT(MOD(StartID, 10000) / 100), MOD(StartID, 100))",
+              "    VAR EndDate =   DATE(INT(EndID / 10000),   INT(MOD(EndID, 10000) / 100),   MOD(EndID, 100))",
+              "    ",
+              "    VAR Ecart = DATEDIFF(StartDate, EndDate, DAY)",
+              "    ",
+              "    RETURN ",
+              "    IF(Ecart = 0, 1, Ecart)",
+              ")"
+            ],
+            "formatString": "0.00"
+          },
+          {
+            "name": "Median resolution time",
+            "expression": [
+              " ",
+              "MEDIANX(",
+              "    FILTER(",
+              "        FactBug,",
+              "        FactBug[IsCurrent] = TRUE() && ",
+              "        FactBug[DateSubmittedId] <> 0 && ",
+              "        FactBug[DateUpdatedId] <> 0 &&",
+              "        (",
+              "            VAR ResStatus = CALCULATE(",
+              "                SELECTEDVALUE(DimStatus[StatusName]), ",
+              "                USERELATIONSHIP(FactBug[ResolutionId], DimStatus[StatusId])",
+              "            )",
+              "            RETURN ResStatus IN {\"fixed\", \"resolved\"}",
+              "        )",
+              "    ),",
+              "    // Même calcul mathématique",
+              "    VAR StartID = FactBug[DateSubmittedId]",
+              "    VAR EndID = FactBug[DateUpdatedId]",
+              "    VAR StartDate = DATE(INT(StartID / 10000), INT(MOD(StartID, 10000) / 100), MOD(StartID, 100))",
+              "    VAR EndDate =   DATE(INT(EndID / 10000),   INT(MOD(EndID, 10000) / 100),   MOD(EndID, 100))",
+              "    VAR Ecart = DATEDIFF(StartDate, EndDate, DAY)",
+              "    ",
+              "    RETURN IF(Ecart = 0, 1, Ecart)",
               ")"
             ]
           }
@@ -685,21 +857,6 @@
         "toColumn": "UserId"
       },
       {
-        "name": "490e5696-9083-4128-8775-c6825789027b",
-        "fromTable": "FactBug",
-        "fromColumn": "ProductVersionId",
-        "toTable": "DimVersion",
-        "toColumn": "VersionId",
-        "isActive": false
-      },
-      {
-        "name": "ff66c41f-5cc3-40e5-9f41-5420d7b403fd",
-        "fromTable": "FactBug",
-        "fromColumn": "VersionFixedId",
-        "toTable": "DimVersion",
-        "toColumn": "VersionId"
-      },
-      {
         "name": "3b05d8b0-6031-4c20-a6ad-5eede74d3433",
         "fromTable": "FactBug",
         "fromColumn": "ViewStatusId",
@@ -713,6 +870,21 @@
         "fromColumn": "ResolutionId",
         "toTable": "DimStatus",
         "toColumn": "StatusId"
+      },
+      {
+        "name": "ff66c41f-5cc3-40e5-9f41-5420d7b403fd",
+        "fromTable": "FactBug",
+        "fromColumn": "VersionFixedId",
+        "toTable": "DimVersion",
+        "toColumn": "VersionId",
+        "isActive": false
+      },
+      {
+        "name": "490e5696-9083-4128-8775-c6825789027b",
+        "fromTable": "FactBug",
+        "fromColumn": "ProductVersionId",
+        "toTable": "DimVersion",
+        "toColumn": "VersionId"
       }
     ],
     "annotations": [

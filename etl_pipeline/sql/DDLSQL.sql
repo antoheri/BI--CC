@@ -121,4 +121,7 @@ CREATE TABLE dbo.FactBug (
     ViewStatusId INT FOREIGN KEY REFERENCES dbo.DimStatus(StatusId),
     StatusId INT FOREIGN KEY REFERENCES dbo.DimStatus(StatusId),
     ResolutionId INT FOREIGN KEY REFERENCES dbo.DimStatus(StatusId)
+
+    CreatedTimestamp DATETIME,
+    UpdatedTimestamp DATETIME, 
 );
