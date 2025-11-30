@@ -214,7 +214,7 @@ The result is a historical fact table that keeps all successive versions of the 
 
 For the modeling part, we designed a star schema centered on the FactBug table.
 
-![Star Schema](../assets/StarSchema-BI.png)
+![Star Schema](/assets/StarSchema-BI.png)
 
 ### 4.1 Fact Table: FactBug
 
@@ -252,11 +252,11 @@ Tools used:
 
 Importing tables, creating relationships, managing inactive relationships.
 
-![alt model in VSStudio](../assets/dataSource.png)
+![alt model in VSStudio](/assets/dataSource.png)
 
-![alt import tables](../assets/importData.png)
+![alt import tables](/assets/importData.png)
 
-![alt model in VS Studio](../assets/modelInVSStudio.png)
+![alt model in VS Studio](/assets/modelInVSStudio.png)
 
 In order to calculate some measures, we had to modify some relationships to define which ones needed to be active or inactive.
 
@@ -265,21 +265,21 @@ In order to calculate some measures, we had to modify some relationships to defi
 - calendar: Year > Month > Day
 - operating system: Platform > OS > OSVersion
 
-![alt calendar hierarchies](../assets/calendarHierarchy.png)
+![alt calendar hierarchies](/assets/calendarHierarchy.png)
 
-![alt OS hierarchies](../assets/OsHierarchy.png)
+![alt OS hierarchies](/assets/OsHierarchy.png)
 
 ### 5.4 Deployment and DAX measures
 
 Before deploying the model, we created several DAX measures to meet the analytical needs outlined in section 2.
 
-![alt DAX measures](../assets/measuresAndDeployment.png)
+![alt DAX measures](/assets/measuresAndDeployment.png)
 
 #### 5.5.1 Model deployment
 
 Deploying the model to SSAS for use via Power BI, we can see the analytical base on the server:
 
-![alt deploy model](../assets/deployment.png)
+![alt deploy model](/assets/deployment.png)
 
 #### 5.5.2 Detailed DAX measures
 
@@ -472,17 +472,17 @@ Since files can only be retrieved from the school network, it is currently autom
 
 Once the model was deployed on SSAS, we were able to connect with Power BI to create analytical reports.
 
-![alt Power BI connection](../assets/importBIDirect.png)
+![alt Power BI connection](/assets/importBIDirect.png)
 
-![alt Power BI import model](../assets/importBidirecte2.png)
+![alt Power BI import model](/assets/importBidirecte2.png)
 
 We can see that all DAX tables and measures are available for analysis:
 
-![alt Poxer Bi import model](../assets/importBiDirect3.png)
+![alt Poxer Bi import model](/assets/importBiDirect3.png)
 
 And we can find the model view also :
 
-![alt Power BI model view](../assets/BI-ModelView.png)
+![alt Power BI model view](/assets/BI-ModelView.png)
 
 ### 6.2 Creating analytical reports
 
@@ -492,25 +492,25 @@ Since the data for previous years is not very relevant (no resolutions, no assig
 
 - General activity:
 
-![alt General activity report](../assets/BI-GeneralActivity.png)
+![alt General activity report](/assets/BI-GeneralActivity.png)
 
 - Developer performance:
 
-![alt Developer performance report](../assets/BI-DeveloperPerformances.png)
+![alt Developer performance report](/assets/BI-DeveloperPerformances.png)
 
 - Version quality:
 
-![alt Version quality report](../assets/BI-ProductQuality.png)
+![alt Version quality report](/assets/BI-ProductQuality.png)
 
 It is very easy to adapt these graphs to analyze other years; it's simply a matter of filters.
 
 - Functional Analysis:
 
-![alt Version quality report](../assets/BI-FunctionalAnalysis.png)
+![alt Version quality report](/assets/BI-FunctionalAnalysis.png)
 
 - Environment & Reproductibility:
 
-![alt Version quality report](../assets/BI-Environment&Reproductibility.png)
+![alt Version quality report](/assets/BI-Environment&Reproductibility.png)
 
 ## 7. Conclusion
 
