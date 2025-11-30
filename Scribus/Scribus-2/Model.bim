@@ -722,6 +722,56 @@
               ")"
             ],
             "formatString": "0.00"
+          },
+          {
+            "name": "Always Reproducible Bugs",
+            "expression": [
+              "",
+              "CALCULATE(",
+              "    DISTINCTCOUNT(FactBug[BugId]),",
+              "    DimReproducibility[ReproducibilityName] = \"always\"",
+              ")"
+            ]
+          },
+          {
+            "name": "Top OS",
+            "expression": [
+              " ",
+              "VAR TableOS =",
+              "    FILTER (",
+              "        SUMMARIZE (",
+              "            FactBug,",
+              "            DimOS[OsName],",
+              "            \"Count\", COUNT(FactBug[BugId])",
+              "        ),",
+              "        DimOS[OsName] <> \"Unknown\"",
+              "            && NOT ISBLANK(DimOS[OsName])",
+              "    )",
+              "VAR TopOne =",
+              "    TOPN ( 1, TableOS, [Count], DESC )",
+              "RETURN",
+              "    CONCATENATEX ( TopOne, DimOS[OsName] )"
+            ]
+          },
+          {
+            "name": "Always Reproducible Ratio (%)",
+            "expression": [
+              " ",
+              "DIVIDE(",
+              "[Always Reproducible Bugs], ",
+              "[Number of bugs (Current)], ",
+              "0)"
+            ]
+          },
+          {
+            "name": "Top Category (by Bugs Created)",
+            "expression": [
+              " ",
+              "VAR TopCat =",
+              "    TOPN(1, SUMMARIZE(FactBug, DimCategory[CategoryName], \"Bugs\", [Bugs Created]), [Bugs], DESC)",
+              "RETURN",
+              "CONCATENATEX(TopCat, DimCategory[CategoryName], \", \")"
+            ]
           }
         ]
       }

@@ -434,6 +434,30 @@ DIVIDE(
 )
 ```
 
+```
+Top Category (by Bugs Created):=
+VAR TopCat =
+    TOPN(1, SUMMARIZE(FactBug, DimCategory[CategoryName], "Bugs", [Bugs Created]), [Bugs], DESC)
+RETURN
+CONCATENATEX(TopCat, DimCategory[CategoryName], ", ")
+```
+
+```
+Always Reproducible Ratio (%):=
+DIVIDE(
+[Always Reproducible Bugs],
+[Number of bugs (Current)],
+0)
+```
+
+```
+Always Reproducible Bugs:=
+CALCULATE(
+    DISTINCTCOUNT(FactBug[BugId]),
+    DimReproducibility[ReproducibilityName] = "always"
+)
+```
+
 #### 5.5.2 Deployment of the ETL script
 
 The Python ETL script is automated via a cron job on a VPS server, executed weekly to load new snapshots.
@@ -456,6 +480,10 @@ We can see that all DAX tables and measures are available for analysis:
 
 ![alt Poxer Bi import model](../assets/importBiDirect3.png)
 
+And we can find the model view also :
+
+![alt Power BI model view](../assets/BI-ModelView.png)
+
 ### 6.2 Creating analytical reports
 
 Using DAX measures and model dimensions, we created several reports to analyze data from the Scribus bug tracker.
@@ -474,6 +502,8 @@ Since the data for previous years is not very relevant (no resolutions, no assig
 
 ![alt Version quality report](../assets/BI-ProductQuality.png)
 
+It is very easy to adapt these graphs to analyze other years; it's simply a matter of filters.
+
 - Functional Analysis:
 
 ![alt Version quality report](../assets/BI-FunctionalAnalysis.png)
@@ -481,8 +511,6 @@ Since the data for previous years is not very relevant (no resolutions, no assig
 - Environment & Reproductibility:
 
 ![alt Version quality report](../assets/BI-Environment&Reproductibility.png)
-
-It is very easy to adapt these graphs to analyze other years; it's simply a matter of filters.
 
 ## 7. Conclusion
 
