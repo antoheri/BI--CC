@@ -1,228 +1,228 @@
-# Documentation du projet
+# Project documentation
 
-## Construction d’un Data Warehouse et d’un modèle OLAP pour l’analyse du bugtracker Scribus
+## Construction of a data warehouse and OLAP model for analyzing the Scribus bug tracker
 
 ## 1. Introduction
 
-Ce projet a été réalisé dans le cadre du module 62-62 Data Exploitation. Son objectif était de construire un système décisionnel complet permettant d’analyser les données issues du bugtracker Scribus. Nous avons dû mettre en œuvre les différentes étapes d’un processus décisionnel moderne :
+This project was carried out as part of the 62-62 Data Exploitation module. Its objective was to build a comprehensive decision-making system capable of analyzing data from the Scribus bug tracker. We had to implement the various stages of a modern decision-making process:
 
-1. extraction et traitement automatique des snapshots CSV publiés hebdomadairement,
-2. conception et alimentation d’un Data Warehouse basé sur un modèle en étoile,
-3. gestion de l’historisation (SCD Type 2) dans la table de faits,
-4. création d’un modèle OLAP Tabular avec SSAS,
-5. développement de mesures analytiques en DAX,
-6. préparation d’un modèle exploitable dans des outils tels que Power BI ou Excel.
-
----
-
-## 2. Objectifs du projet
-
-Les objectifs principaux étaient les suivants :
-
-- comprendre et structurer les données du bugtracker Scribus,
-- créer un schéma en étoile adapté aux besoins analytiques,
-- développer un pipeline ETL automatisé en Python,
-- gérer les dimensions en SCD Type 1 et la table de faits en SCD Type 2,
-- construire un modèle Tabular dans SSAS basé sur le DWH produit,
-- permettre l’analyse détaillée et multidimensionnelle de l’évolution des bugs.
-
-Le système développé devait permettre de répondre à un ensemble de questions analytiques, notamment :
-
-- évolution du nombre de bugs dans le temps,
-- performance des développeurs,
-- qualité des différentes versions du logiciel,
-- répartition des bugs selon les modules,
-- analyse de la reproductibilité et des environnements d’exécution.
+1. automatic extraction and processing of weekly CSV snapshots,
+2. design and feeding of a Data Warehouse based on a star schema,
+3. management of historization (SCD Type 2) in the fact table,
+4. creation of a Tabular OLAP model with SSAS,
+5. development of analytical measures in DAX,
+6. preparation of a model that can be used in tools such as Power BI or Excel.
 
 ---
 
-## 3. Architecture globale du système
+## 2. Project objectives
 
-Le système complet repose sur une architecture classique de Business Intelligence composée de trois couches : Extraction, Transformation et Chargement. Pour ce projet, nous avons développé un pipeline ETL en Python qui automatise l’ensemble du processus. Le code source est disponible dans le répertoire `etl_pipeline`, ainsi que le script SQL DDL pour la création du Data Warehouse.
+The main objectives were as follows:
+
+- Understand and structure the Scribus bug tracker data.
+- Create a star schema adapted to analytical needs.
+- Develop an automated ETL pipeline in Python.
+- Manage dimensions in SCD Type 1 and the fact table in SCD Type 2.
+- Build a Tabular model in SSAS based on the product DWH.
+- enable detailed and multidimensional analysis of bug evolution.
+
+The developed system had to be able to answer a set of analytical questions, including:
+
+- evolution of the number of bugs over time,
+- developer performance,
+- quality of different software versions,
+- distribution of bugs by module,
+- analysis of reproducibility and execution environments.
+
+---
+
+## 3. Overall system architecture
+
+The entire system is based on a classic Business Intelligence architecture consisting of three layers: Extraction, Transformation, and Loading. For this project, we developed an ETL pipeline in Python that automates the entire process. The source code is available in the `etl_pipeline` directory, along with the SQL DDL script for creating the Data Warehouse.
 
 ### 3.1 Extraction
 
-Les snapshots Scribus sont publiés sous forme de fichiers CSV accessibles depuis un répertoire web. Notre pipeline automatise leur récupération :
+Scribus snapshots are published as CSV files accessible from a web directory. Our pipeline automates their retrieval:
 
-- il se connecte à la page listant les CSV,
-- identifie les nouveaux fichiers en comparant avec le dossier local,
-- télécharge uniquement les fichiers manquants,
-- les sauvegarde dans un répertoire dédié.
+- it connects to the page listing the CSV files,
+- identifies new files by comparing them with the local folder,
+- downloads only the missing files,
+- saves them in a dedicated directory.
 
-Afin d'automatiser le processus, nous avons configuré un job "cron" sur un serveur Linux pour exécuter le script ETL chaque semaine.
+To automate the process, we have configured a “cron” job on a Linux server to run the ETL script every week.
 
-La structure d'un cron est la suivante :
+The structure of a cron is as follows:
 
-```* * * * *  commande à exécuter
+```* * * * *  command to execute
 - - - - - -
 | | | | | | |
-| | | | +---- Jour de la semaine (0 - 7) (Dimanche=0 ou 7)
-| | | +------ Mois (1 - 12)
-| | +-------- Jour du mois (1 - 31)
-| +---------- Heure (0 - 23)
-+------------ Minute (0 - 59)
+| | | | +---- Day of week (0 - 7) (Sunday=0 ou 7)
+| | | +------ Month (1 - 12)
+| | +-------- Day (1 - 31)
+| +---------- Hour (0 - 23)
++------------ Minutes (0 - 59)
 ```
 
-Voici le cron qui exécute le script tous les lundis à 8h du matin sur notre serveur :
+Here is the cron job that runs the script every Monday at 8 a.m. on our server:
 
 ```
 0 8 * * 1 /home/tottino/Documents/HESProjects/BI--CC/etl_pipeline/etl_pipeline.py
 ```
 
-#### 3.1.1 Téléchargement et lecture des fichiers
+#### 3.1.1 Downloading and reading files
 
 `get_csv_from_url(URL, file_path='./data/')`
 
-1. Télécharge le HTML de la page `URL`.
-2. Analyse le contenu avec BeautifulSoup pour trouver les liens vers les fichiers CSV du bugtracker.
-3. Filtre les liens pour ne garder que les fichiers correspondant aux dumps Scribus.
-4. Compare la liste des fichiers trouvés avec les fichiers déjà présents dans le dossier local `file_path`.
-5. Télécharge uniquement les fichiers manquants, avec une barre de progression par fichier.
+1. Download the HTML from the `URL` page.
+2. Analyze the content with BeautifulSoup to find links to the bug tracker CSV files.
+3. Filter the links to keep only files corresponding to Scribus dumps.
+4. Compare the list of files found with the files already present in the local `file_path` folder.
+5. Download only the missing files, with a progress bar for each file.
 
-Elle joue le rôle d'une étape d'extraction automatisée, remplaçant le couple "source de fichiers plats + Foreach Loop" vu dans SSIS.
+It acts as an automated extraction step, replacing the “flat file source + Foreach Loop” combination seen in SSIS.
 
-#### 3.1.2 Lecture des fichiers CSV
+### 3.1.2 Reading CSV files
 
 `get_data_from_file(file_path)`
 
-Cette fonction :
+This function:
 
-1. Charge un fichier CSV dans un DataFrame Pandas.
-2. Utilise une expression régulière pour extraire la date du snapshot à partir du nom du fichier (format `YYYY-MM-DD`).
-3. Si aucune date n'est trouvée, utilise la date du jour.
-4. Renvoie le DataFrame et la date de chargement (snapshot).
+1. Loads a CSV file into a Pandas DataFrame.
+2. Uses a regular expression to extract the snapshot date from the file name (format `YYYY-MM-DD`).
+3. If no date is found, uses the current date.
+4. Returns the DataFrame and the load date (snapshot).
 
-La date extraite est utilisée ensuite comme `SDC_StartDate` dans la logique SCD2 de la table de faits.
+The extracted date is then used as `SDC_StartDate` in the SCD2 logic of the fact table.
 
 ### 3.2 Transformation
 
-Les fichiers CSV contiennent des valeurs manquantes, des données textuelles hétérogènes et des colonnes nécessitant une conversion de type. Les transformations suivantes ont été appliquées :
+The CSV files contain missing values, heterogeneous text data, and columns requiring type conversion. The following transformations were applied:
 
-- normalisation des valeurs textuelles (minuscules, nettoyage),
-- gestion des valeurs manquantes par des valeurs standardisées,
-- conversion des dates en types appropriés,
-- suppression des doublons,
-- renommage des colonnes pour correspondre au schéma du DWH,
-- ajout d’une colonne SDC_StartDate représentant la date du snapshot chargé.
+- normalization of text values (lowercase, cleaning),
+- handling of missing values with standardized values,
+- conversion of dates to appropriate types,
+- removal of duplicates,
+- renaming of columns to match the DWH schema,
+- addition of an SDC_StartDate column representing the date of the loaded snapshot.
 
-#### 3.2.1 Nettoyage et préparation des données
+#### 3.2.1 Data cleaning and preparation
 
 `clean_data(data)`
 
-Cette fonction applique les transformations suivantes :
+This function applies the following transformations:
 
-- Remplacement des valeurs manquantes dans certaines colonnes textuelles par une valeur standardisée (`"Unknown"`).
-- Conversion en minuscules de colonnes de type catégoriel (priority, severity, reproducibility, etc.) afin d'éviter les doublons logiques dus à la casse.
-- Conversion des colonnes de dates (`Date Submitted`, `Updated`) en type datetime.
-- Suppression des doublons éventuels dans les données.
+- Replacement of missing values in certain text columns with a standardized value (“Unknown”).
+- Conversion of categorical columns (priority, severity, reproducibility, etc.) to lowercase to avoid logical duplicates due to case sensitivity.
+- Conversion of date columns (Date Submitted, Updated) to datetime type.
+- Removal of any duplicates in the data.
 
-Elle correspond aux étapes de nettoyage et de standardisation présentées dans les cours (Derived Columns, Data Cleaning).
+This corresponds to the cleaning and standardization steps presented in the courses (Derived Columns, Data Cleaning).
 
-#### 3.2.2 Préparation pour le chargement
+#### 3.2.2 Preparation for loading
 
 `prepare_data_for_staging(data, loaded_date)`
 
-Cette fonction :
+This function:
 
-- Renomme les colonnes du DataFrame pour qu'elles correspondent à la nomenclature du DWH (par exemple `Id` → `BugId`, `Project` → `ProjectName`, `Reporter` → `ReporterName`, etc.).
-- Ajoute une colonne `SDC_StartDate` définie à la date de snapshot extraite précédemment.
+- Renames the DataFrame columns to match the DWH nomenclature (e.g., `Id` → `BugId`, `Project` → `ProjectName`, `Reporter` → `ReporterName`, etc.).
+- Adds an `SDC_StartDate` column defined as the previously extracted snapshot date.
 
-L'idée est de préparer les données à être utilisées pour la mise à jour des dimensions et le chargement de la table de faits, dans un format cohérent avec le schéma du Data Warehouse.
+The idea is to prepare the data to be used for updating dimensions and loading the fact table, in a format consistent with the Data Warehouse schema.
 
-### 3.3 Chargement
+### 3.3 Loading
 
-Le chargement s’effectue en deux étapes distinctes : dimensions et faits.
+Loading is performed in two separate steps: dimensions and facts.
 
 #### 3.3.1 Dimensions (SCD Type 1)
 
-Les dimensions sont chargées via un mécanisme utilisant des tables temporaires SQL et des commandes MERGE.
-Cette approche permet :
+Dimensions are loaded using a mechanism that employs temporary SQL tables and MERGE commands.
+This approach allows:
 
-- d’insérer uniquement les nouvelles valeurs distinctes,
-- de conserver une seule version par membre,
-- d’éviter toute historisation dans les dimensions.
+- only new distinct values to be inserted,
+- a single version per member to be retained,
+- any historization in the dimensions to be avoided.
 
-Il s’agit d’un fonctionnement équivalent au composant Slowly Changing Dimension en mode SCD Type 1 dans SSIS.
+This is equivalent to the Slowly Changing Dimension component in SCD Type 1 mode in SSIS.
 
 `_merge_simple_dimension(...)`
 
-Cette fonction utilitaire est utilisée pour toutes les dimensions simples (Project, Priority, Severity, Reproducibility, Version, Category, Status, etc.). Son fonctionnement :
+This utility function is used for all simple dimensions (Project, Priority, Severity, Reproducibility, Version, Category, Status, etc.). How it works:
 
-1. Construire une liste de valeurs uniques (texte) à partir d'une série Pandas, en éliminant les valeurs nulles ou `"Unknown"`.
-2. Créer une table temporaire SQL (`#StageXXX`) avec une seule colonne NVARCHAR.
-3. Insérer toutes les valeurs uniques dans cette table temporaire.
-4. Exécuter une commande `MERGE` entre la table temporaire et la dimension cible, en insérant uniquement les valeurs absentes de la dimension.
-5. Supprimer la table temporaire.
+1. Build a list of unique values (text) from a Pandas series, eliminating null values or `“Unknown”`.
+2. Create a temporary SQL table (`#StageXXX`) with a single NVARCHAR column.
+3. Insert all unique values into this temporary table.
+4. Execute a `MERGE` command between the temporary table and the target dimension, inserting only values that are missing from the dimension.
+5. Delete the temporary table.
 
-On obtient ainsi un comportement équivalent au remplissage d'une dimension de type SCD1 dans SSIS : pas d'historisation, ajout des nouvelles valeurs uniquement.
+This results in behavior equivalent to filling an SCD1 dimension in SSIS: no history, only new values are added.
 
 `update_dimensions_staging(data, db_connector)`
 
-Cette fonction :
+This function:
 
-- Crée un curseur SQL sur la connexion.
-- Appelle `_merge_simple_dimension` pour alimenter les dimensions :
+- Creates an SQL cursor on the connection.
+- Calls `_merge_simple_dimension` to populate the dimensions:
   - DimProject (ProjectName)
-  - DimUser (ReporterName et AssigneeName)
+  - DimUser (ReporterName and AssigneeName)
   - DimPriority
   - DimSeverity
   - DimReproducibility
-  - DimVersion (ProductVersionName et VersionFixedName)
+  - DimVersion (ProductVersionName and VersionFixedName)
   - DimCategory
   - DimStatus (ViewStatusName, StatusName, ResolutionName)
-- Traite séparément la dimension DimOs, qui dépend de plusieurs colonnes (Platform, OS, OSVersion), en utilisant également une table temporaire et un MERGE.
-- Met à jour DimCalendar en insérant toutes les dates utiles (dates de soumission, de mise à jour, de début et de fin SDC). Les dates sont transformées en clé DateId au format `YYYYMMDD` et insérées via une table temporaire et un MERGE.
+- Processes the DimOs dimension separately, which depends on several columns (Platform, OS, OSVersion), also using a temporary table and a MERGE.
+- Updates DimCalendar by inserting all relevant dates (submission, update, SDC start, and SDC end dates). The dates are converted to a DateId key in `YYYYMMDD` format and inserted via a temporary table and a MERGE.
 
-Cette étape assure que toutes les dimensions nécessaires à FactBug sont complètes et à jour avant le chargement des faits.
+This step ensures that all dimensions required by FactBug are complete and up to date before the facts are loaded.
 
-#### 3.3.2 Table de faits (SCD Type 2)
+#### 3.3.2 Fact table (SCD Type 2)
 
-La table FactBug conserve l’historique des états d’un bug dans le temps.
-Pour chaque snapshot chargé :
+The FactBug table keeps a history of a bug's status over time.
+For each snapshot loaded:
 
-1. les lignes existantes correspondant aux mêmes BugId et marquées comme IsCurrent sont mises à jour :
-   - IsCurrent passe à 0,
-   - SDC_EndDate est fixé à la veille du chargement,
-2. une nouvelle version du bug est insérée :
+1. Existing rows corresponding to the same BugId and marked as IsCurrent are updated:
+   - IsCurrent is set to 0,
+   - SDC_EndDate is set to the day before loading,
+2. A new version of the bug is inserted:
    - IsCurrent = 1,
-   - SDC_StartDate correspond à la date du snapshot,
-   - les clés substituts des dimensions sont résolues via jointures.
+   - SDC_StartDate corresponds to the snapshot date,
+   - The surrogate keys of the dimensions are resolved via joins.
 
 `load_fact_snapshot_scd2_staging(data, db_connector)`
 
-Cette fonction réalise le cœur de la logique SCD2 de notre ETL :
+This function performs the core SCD2 logic of our ETL:
 
-1. Préparation des données :
-   - Ajout de colonnes de dates formatées pour SQL (DateSubmitted_SQL, DateUpdated_SQL, SDC_StartDate_SQL).
-   - Remplacement des valeurs manquantes par `None` (NULL SQL).
-2. Création d'une table temporaire `#StageFact` dans SQL, avec les colonnes nécessaires (BugId, noms textuels, dates, etc.).
-3. Insertion de toutes les lignes du DataFrame dans `#StageFact`.
-4. Fermeture des anciennes versions SCD2 :
-   - Calcul de `SDC_EndDate` comme la veille de `SDC_StartDate`.
-   - Mise à jour de `FactBug` pour toutes les lignes ayant le même BugId et `IsCurrent = 1`, en mettant `IsCurrent = 0` et en renseignant `SDC_EndDate`.
-5. Insertion des nouvelles lignes :
-   - `INSERT INTO FactBug` en sélectionnant depuis `#StageFact` et en joignant toutes les dimensions (DimProject, DimUser, DimPriority, DimSeverity, DimReproducibility, DimVersion, DimCategory, DimStatus, DimOs, DimCalendar).
-   - Les jointures fournissent les clés substituts nécessaires à la fact table.
-   - Les nouvelles lignes ont `IsCurrent = 1`, `SDC_StartDate` renseigné et `SDC_EndDate` à NULL.
-6. Suppression de la table temporaire et commit de la transaction.
+1. Data preparation:
+   - Addition of date columns formatted for SQL (DateSubmitted_SQL, DateUpdated_SQL, SDC_StartDate_SQL).
+   - Replacing missing values with `None` (SQL NULL).
+2. Creating a temporary table `#StageFact` in SQL, with the necessary columns (BugId, text names, dates, etc.).
+3. Inserting all rows from the DataFrame into `#StageFact`.
+4. Closing old SCD2 versions:
+   - Calculating `SDC_EndDate` as the day before `SDC_StartDate`.
+   - Updating `FactBug` for all rows with the same BugId and `IsCurrent = 1`, setting `IsCurrent = 0` and filling in `SDC_EndDate`.
+5. Inserting new rows:
+   - `INSERT INTO FactBug` by selecting from `#StageFact` and joining all dimensions (DimProject, DimUser, DimPriority, DimSeverity, DimReproducibility, DimVersion, DimCategory, DimStatus, DimOs, DimCalendar).
+   - The joins provide the necessary surrogate keys for the fact table.
+   - The new rows have `IsCurrent = 1`, `SDC_StartDate` filled in, and `SDC_EndDate` set to NULL.
+6. Delete the temporary table and commit the transaction.
 
-Le résultat est une table de faits historisée qui conserve toutes les versions successives du même bug, en cohérence avec le concept de SCD Type 2.
+The result is a historical fact table that keeps all successive versions of the same bug, consistent with the SCD Type 2 concept.
 
 ---
 
-## 4. Modélisation du Data Warehouse
+## 4. Data Warehouse Modeling
 
-Pour la partie modélisation, nous avons conçu un schéma en étoile centré sur la table FactBug.
+For the modeling part, we designed a star schema centered on the FactBug table.
 
-![Schéma en étoile](../assets/StarSchema-BI.png)
+![Star Schema](../assets/StarSchema-BI.png)
 
-### 4.1 Table de faits : FactBug
+### 4.1 Fact Table: FactBug
 
-FactBug contient les faits historisés et toutes les clés vers les dimensions.
+FactBug contains the historical facts and all keys to the dimensions.
 
 ### 4.2 Dimensions
 
-Les dimensions suivantes ont été créées et alimentées :
+The following dimensions were created and populated:
 
 - DimProject
 - DimUser
@@ -237,9 +237,9 @@ Les dimensions suivantes ont été créées et alimentées :
 
 ---
 
-## 6. Création du modèle analytique (OLAP)
+## 5. Creating the analytical model (OLAP)
 
-### 6.1 Choix du modèle Tabular
+### 5.1 Choosing the Tabular model
 
 In SSAS (SQL Server Analysis Services), you have two main options for creating a model: Tabular and Multidimensional. For this project, we opted for the Tabular (DAX) because it is more modern, easier to use, and can be integrated with Power BI (which is not possible with Multidimensional).
 
@@ -248,9 +248,9 @@ Tools used:
 - Visual Studio 2022 with SQL Server Data Tools (SSDT) extension
 - SQL Server Analysis Services (SSAS)
 
-### 6.2 Construction du modèle dans Visual Studio
+### 5.2 Building the model in Visual Studio
 
-Importation des tables, création des relations, gestion des relations inactives.
+Importing tables, creating relationships, managing inactive relationships.
 
 ![alt model in VSStudio](../assets/dataSource.png)
 
@@ -258,30 +258,30 @@ Importation des tables, création des relations, gestion des relations inactives
 
 ![alt model in VS Studio](../assets/modelInVSStudio.png)
 
-In order to calculate some measure, we had to modifiy some realtion to define which need to be active or inactive.
+In order to calculate some measures, we had to modify some relationships to define which ones needed to be active or inactive.
 
-### 6.4 Hiérarchies et perspectives
+### 5.3 Hierarchies and perspectives
 
-- calendrier : Year > Month > Day
-- système d’exploitation : Platform > OS > OSVersion
+- calendar: Year > Month > Day
+- operating system: Platform > OS > OSVersion
 
 ![alt calendar hierarchies](../assets/calendarHierarchy.png)
 
 ![alt OS hierarchies](../assets/OsHierarchy.png)
 
-### 6.5 Déploiement et mesures DAX
+### 5.4 Deployment and DAX measures
 
-Avant de déployer le modèle, nous avons créé plusieurs mesures DAX pour répondre aux besoins analytiques posés dans la section 2.
+Before deploying the model, we created several DAX measures to meet the analytical needs outlined in section 2.
 
 ![alt DAX measures](../assets/measuresAndDeployment.png)
 
-#### 6.5.1 Déploiement du modèle
+#### 5.5.1 Model deployment
 
-Déploiement du modèle vers SSAS pour utilisation via Power BI, on peut voir la base analytique sur le serveur :
+Deploying the model to SSAS for use via Power BI, we can see the analytical base on the server:
 
 ![alt deploy model](../assets/deployment.png)
 
-#### 6.5.2 Mesures DAX détaillées
+#### 5.5.2 Detailed DAX measures
 
 ```
 Number of bugs (Current):=
@@ -434,56 +434,66 @@ DIVIDE(
 )
 ```
 
-#### 6.5.2 Déploiement du script ETL
+#### 5.5.2 Deployment of the ETL script
 
-Le script ETL Python est automatisé via un job cron sur un serveur VPS, exécuté chaque semaine pour charger les nouveaux snapshots.
+The Python ETL script is automated via a cron job on a VPS server, executed weekly to load new snapshots.
 
-Etant donnée qu'il n'est possible de récupérer les fichiers que sur le réseau de l'école, il est actuellement automatisé sur un poste local.
+Since files can only be retrieved from the school network, it is currently automated on a local workstation.
 
 ---
 
-## 7. Analyse et exploitation
+## 6. Analysis and exploitation
 
-### 7.1 Connexion avec Power BI
+### 6.1 Connection with Power BI
 
-Une fois le modèle déployé sur SSAS, nous avons pu nous connecter avec Power BI pour créer des rapports analytiques.
+Once the model was deployed on SSAS, we were able to connect with Power BI to create analytical reports.
 
 ![alt Power BI connection](../assets/importBIDirect.png)
 
 ![alt Power BI import model](../assets/importBidirecte2.png)
 
-On remarque que toutes les tables et mesures DAX sont disponibles pour l'analyse :
+We can see that all DAX tables and measures are available for analysis:
 
 ![alt Poxer Bi import model](../assets/importBiDirect3.png)
 
-### 7.2 Création de rapports analytiques
+### 6.2 Creating analytical reports
 
-En utilisant les mesures DAX et les dimensions du modèle, nous avons créé plusieurs rapports pour analyser les données du bugtracker Scribus.
+Using DAX measures and model dimensions, we created several reports to analyze data from the Scribus bug tracker.
 
-Les données n'étant pas très relevantes pour les années précédentes (pas de résolutions, pas d'assignations, etc.) et puisque les updates arrivent depuis le cette année, nous avons créé des rapports pour l'année en cours (2025) :
+Since the data for previous years is not very relevant (no resolutions, no assignments, etc.) and since updates have been coming in since this year, we have created reports for the current year (2025):
 
-- Activité générale :
+- General activity:
 
 ![alt General activity report](../assets/BI-GeneralActivity.png)
 
-- Performance des développeurs :
+- Developer performance:
 
 ![alt Developer performance report](../assets/BI-DeveloperPerformances.png)
 
-- Qualité des versions :
+- Version quality:
 
 ![alt Version quality report](../assets/BI-ProductQuality.png)
 
-Il est très facile d'adapter ces graphques pour analyser d'autres années, c'est simplement des filtres.
+- Functional Analysis:
 
-## 8. Conclusion
+![alt Version quality report](../assets/BI-FunctionalAnalysis.png)
 
-Le projet met en œuvre toute la chaîne décisionnelle : ETL, SCD, DWH, OLAP Tabular et mesures analytiques.
+- Environment & Reproductibility:
 
-```
+![alt Version quality report](../assets/BI-Environment&Reproductibility.png)
 
-```
+It is very easy to adapt these graphs to analyze other years; it's simply a matter of filters.
 
-```
+## 7. Conclusion
 
-```
+The project implements the entire decision-making chain: ETL, SCD, DWH, OLAP Tabular, and analytical measures.
+
+This project demonstrates the successful implementation of a complete Business Intelligence pipeline, from raw data extraction to analytical reporting. Starting from unstructured CSV snapshots published by the Scribus project, we designed and implemented a robust ETL process capable of cleaning, transforming, and historizing bug data through an SCD Type 2 fact table.
+
+The resulting Data Warehouse, modeled using a star schema, provides a stable and consistent foundation for analytical workloads. The construction of a Tabular OLAP model in SSAS further enabled the creation of advanced DAX measures tailored to real analytical needs such as developer performance, product quality, bug resolution trends, and environment-specific issues.
+
+The integration with Power BI allowed us to produce clear, interactive dashboards that answer the project’s key analytical questions. These dashboards highlight important insights, such as the evolution of bug creation over time, the performance of Scribus developers, and the stability of specific software versions and operating systems.
+
+Beyond fulfilling the academic requirements, this project provided hands-on experience with essential BI concepts: ETL design, SCD management, dimensional modeling, DAX development, and OLAP cube deployment. It also demonstrated how structured analytical systems can transform raw operational data into meaningful information that supports decision-making.
+
+Overall, the project successfully delivers a complete, end-to-end BI solution that is maintainable, scalable, and ready to support further analytical extensions in the future.
