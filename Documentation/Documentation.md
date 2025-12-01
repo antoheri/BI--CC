@@ -53,7 +53,7 @@ To automate the process, we have configured a “cron” job on a Linux server t
 
 The structure of a cron is as follows:
 
-```* * * * *  command to execute
+```bash
 - - - - - -
 | | | | | | |
 | | | | +---- Day of week (0 - 7) (Sunday=0 ou 7)
@@ -65,7 +65,7 @@ The structure of a cron is as follows:
 
 Here is the cron job that runs the script every Monday at 8 a.m. on our server:
 
-```
+```bash
 0 8 * * 1 /home/tottino/Documents/HESProjects/BI--CC/etl_pipeline/etl_pipeline.py
 ```
 
@@ -283,7 +283,7 @@ Deploying the model to SSAS for use via Power BI, we can see the analytical base
 
 #### 5.5.2 Detailed DAX measures
 
-```
+```dax
 Number of bugs (Current):=
 CALCULATE(
     DISTINCTCOUNT(FactBug[BugId]),
@@ -291,11 +291,11 @@ CALCULATE(
 )
 ```
 
-```
+```dax
 Number of changes (History):= COUNTROWS(FactBug)
 ```
 
-```
+```dax
 Bugs Assigned:=
 CALCULATE(
     [Number of bugs (Current)],
@@ -304,7 +304,7 @@ CALCULATE(
 )
 ```
 
-```
+```dax
 Bugs Created:=
 CALCULATE(
     [Number of bugs (Current)],
@@ -312,7 +312,7 @@ CALCULATE(
 )
 ```
 
-```
+```dax
 Open Bugs:=
 CALCULATE(
     [Number of bugs (Current)],
@@ -327,7 +327,7 @@ CALCULATE(
 )
 ```
 
-```
+```dax
 Bugs Resolved (Total):=
 CALCULATE(
     [Number of bugs (Current)],
@@ -342,7 +342,7 @@ CALCULATE(
 )
 ```
 
-```
+```dax
 Bugs resolved (per developer):=
 CALCULATE(
     [Bugs Resolved (Total)],
@@ -350,7 +350,7 @@ CALCULATE(
 )
 ```
 
-```
+```dax
 Bugs Fixed (Success):=
 CALCULATE(
     [Number of bugs (Current)],
@@ -359,7 +359,7 @@ CALCULATE(
 )
 ```
 
-```
+```dax
 Average resolution time (Days):=
 AVERAGEX(
     FILTER(
@@ -392,7 +392,7 @@ AVERAGEX(
 )
 ```
 
-```
+```dax
 Top Dev (Summary):=
 VAR DevStats =
     ADDCOLUMNS(
@@ -425,7 +425,7 @@ RETURN
     )
 ```
 
-```
+```dax
 Rate Bug Correction (%):=
 DIVIDE(
     [Bugs Resolved (Total)],
@@ -434,7 +434,7 @@ DIVIDE(
 )
 ```
 
-```
+```dax
 Top Category (by Bugs Created):=
 VAR TopCat =
     TOPN(1, SUMMARIZE(FactBug, DimCategory[CategoryName], "Bugs", [Bugs Created]), [Bugs], DESC)
@@ -442,7 +442,7 @@ RETURN
 CONCATENATEX(TopCat, DimCategory[CategoryName], ", ")
 ```
 
-```
+```dax
 Always Reproducible Ratio (%):=
 DIVIDE(
 [Always Reproducible Bugs],
@@ -450,7 +450,7 @@ DIVIDE(
 0)
 ```
 
-```
+```dax
 Always Reproducible Bugs:=
 CALCULATE(
     DISTINCTCOUNT(FactBug[BugId]),
